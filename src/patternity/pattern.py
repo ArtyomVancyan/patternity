@@ -50,11 +50,11 @@ class Pattern:
         return np.mean(np.abs(plot1_shifted - plot2_shifted) /
                        np.maximum(plot1_shifted, plot2_shifted))
 
-    def slices(self, min_slice_length: int = 20) -> tuple[tuple, np.array]:  # TODO: use self.min_length instead
+    def slices(self) -> tuple[tuple, np.array]:
         """Generates all possible slices of the historical data."""
 
         for i in range(self.horizon):
-            for j in range(i + min_slice_length, self.horizon + 1):
+            for j in range(i + self.min_length, self.horizon + 1):
                 yield (i, j), self.history[i:j]
 
     def patterns(self) -> list[tuple[tuple, np.array]]:

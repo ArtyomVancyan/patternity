@@ -6,19 +6,19 @@ import numpy as np
 
 
 class Pattern:
-    def __init__(self, history: np.array, min_length: int = 50, progress: Callable[[Iterable], Iterable] = None):
+    def __init__(self, history: np.array, window: int = 50, progress: Callable[[Iterable], Iterable] = None):
         """
         Initialize the pattern detector.
 
         :param history: Historical data to be analyzed. Usually, the closing prices of an asset.
-        :param min_length: Minimum length of the pattern to be considered.
+        :param window: The minimum length of the pattern window to be considered.
         :param progress: Progress bar to be displayed during the analysis.
         """
 
         self.history = history
         self.horizon = len(history)
         self.progress = progress or (lambda x: x)
-        self.min_length = min_length
+        self.window = window
         self.predictions = np.array([])
 
     @staticmethod
@@ -57,7 +57,7 @@ class Pattern:
         """Generates all possible slices of the historical data."""
 
         for i in range(self.horizon):
-            for j in range(i + self.min_length, self.horizon + 1):
+            for j in range(i + self.window, self.horizon + 1):
                 yield (i, j), self.history[i:j]
 
     def patterns(self) -> list[tuple[tuple, np.array]]:
@@ -66,8 +66,8 @@ class Pattern:
         def valid(x) -> bool:
             return all([
                 self.horizon == x[0][1],
-                len(x[1]) >= self.min_length,
-                len(x[1]) <= self.horizon - self.min_length,
+                len(x[1]) >= self.window,
+                len(x[1]) <= self.horizon - self.window,
             ])
 
         return sorted([x for x in self.slices() if valid(x)], key=lambda x: (len(x[1]), x[0][1]), reverse=True)

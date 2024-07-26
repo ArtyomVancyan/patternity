@@ -1,0 +1,8 @@
+.idea
+
+*.pyc
+*.egg-info
+
+sdist
+bdist_wheel
+__pycache__/

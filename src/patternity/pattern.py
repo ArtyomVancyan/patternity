@@ -1,20 +1,23 @@
 from fractions import Fraction
+from typing import Callable, Iterable
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 class Pattern:
-    def __init__(self, history: np.array, min_length: int = 50):
+    def __init__(self, history: np.array, min_length: int = 50, progress: Callable[[Iterable], Iterable] = None):
         """
         Initialize the pattern detector.
 
         :param history: Historical data to be analyzed. Usually, the closing prices of an asset.
         :param min_length: Minimum length of the pattern to be considered.
+        :param progress: Progress bar to be displayed during the analysis.
         """
 
         self.history = history
         self.horizon = len(history)
+        self.progress = progress or (lambda x: x)
         self.min_length = min_length
         self.predictions = np.array([])
 
@@ -75,7 +78,7 @@ class Pattern:
         best_rate = float("inf")
         best_fractal = tuple()
         best_pattern = tuple()
-        for (x1, x2), pattern in self.patterns():
+        for (x1, x2), pattern in self.progress(self.patterns()):
             for subplot in self.slices():
                 if subplot[0][1] >= x1:
                     continue
